@@ -2,7 +2,14 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const dataFilePath = path.join(process.cwd(), 'data', 'todos.json');
+// Ensure Node.js runtime so fs is available (Vercel defaults can be Edge)
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// Use runtime-writable temp directory on Vercel; local 'data' dir in dev
+const dataDir = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(process.cwd(), 'data');
+const dataFilePath = path.join(dataDir, 'todos.json');
 
 async function ensureDataFile() {
   try {
